@@ -1,0 +1,6 @@
+authenticated.users=[{"id"\:"59f028ca-58b2-4771-8ca9-7c65448bb38f","token"\:"c96060b0-5e80-46c5-bdb9-5121ebffd754","userId"\:"xxxxbharathxxxx","email"\:"bharath.n120@google.com","refreshToken"\:"","baseUrl"\:"https\://anypoint.mulesoft.com/","org"\:{"name"\:"mule","id"\:"86d2f987-dd35-4960-a988-2a8e866dcdad","isMaster"\:true}}]
+current.token=c96060b0-5e80-46c5-bdb9-5121ebffd754
+current.user=xxxxbharathxxxx
+eclipse.preferences.version=1
+expiration.time=15
+org.mule.tooling.ui.properties.enable.api.dependencies=true

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getFlightsFlow" doc:id="2a098861-44a6-4bf6-9e0d-60c55ae39473" >
+		<db:select doc:name="SELECT all flights" doc:id="60177807-a0db-4deb-9346-ff5fce5feec0" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM flights]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="c5550f3e-0312-4336-9033-a41a5e112bae" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: payload01.ID,
+	code1: payload01.code1 default "",
+	code2: payload01.code2 default "",
+	airlineName: payload01.airlineName,
+	destination: payload01.toAirport default "",
+	origin: payload01.fromAirport default "",
+	departureDate: payload01.takeOffDate as String default "",
+	price: payload01.price default 0,
+	planeType: payload01.planeType default "",
+	emptySeats: payload01.seatsAvailable as Number default 0,
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2cadbf7d-8df7-4f50-8ad8-9c06d7bbf7c5" message="#[payload]"/>
+	</flow>
+	<flow name="getFlightsByIdFlow" doc:id="630cf464-e21c-4549-8db9-97721fd83a06" >
+		<db:select doc:name="SELECT flights by ID" doc:id="97156ec0-c02c-48d3-9b6e-dd5ea5f06c00" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM flights WHERE id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: attributes.queryParams.ID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="d2bfc8c7-264a-4446-ad61-98f2f77f230f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	ID: payload01.ID,
+	code1: payload01.code1 default "",
+	code2: payload01.code2 default "",
+	airlineName: payload01.airlineName,
+	destination: payload01.toAirport default "",
+	origin: payload01.fromAirport default "",
+	departureDate: payload01.takeOffDate as String default "",
+	price: payload01.price default 0,
+	planeType: payload01.planeType default "",
+	emptySeats: payload01.seatsAvailable as Number default 0,
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d9255842-bc95-4c59-a8db-ff7403596e51" />
+	</flow>
+	<flow name="postFlightsFlow" doc:id="feb5917d-7fe5-4b35-ba8e-303102771927" >
+		<logger level="INFO" doc:name="Logger" doc:id="28e50f80-ac2b-4104-8606-10dcc4f15489" message="Flights added but not really"/>
+		<set-payload value="Flights added but not really" doc:name="Flights added but not really" doc:id="f92c8acf-4df1-4654-85d3-75722c9c03a4" />
+	</flow>
+	<flow name="deleteFlightsFlow" doc:id="2b31fc93-8a5f-49a0-aeaa-a92836527674" >
+		<logger level="INFO" doc:name="Logger" doc:id="a07e5b51-2fdf-4637-a37a-250549171a55" message="Flights deleted but not really"/>
+		<set-payload value="Flights deleted but not really" doc:name="Flights deleted but not really" doc:id="497c2cb7-264a-4cd7-a9d2-e511b5dc6126" />
+	</flow>
+</mule>

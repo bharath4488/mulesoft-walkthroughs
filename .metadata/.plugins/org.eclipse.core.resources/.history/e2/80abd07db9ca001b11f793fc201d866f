@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dcc6ab93-80fe-4aa7-a517-cf5d357dc107" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7b710fc2-2eac-4821-8436-fcfa0aea65e0">
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<vm:config name="PublishQ" doc:name="VM Config" doc:id="7142aabd-ceb9-4ecf-ad8a-7a47a7526a15" >
+		<vm:queues >
+			<vm:queue queueName="publishQ" />
+			<vm:queue queueName="publishandconsumeQ" />
+		</vm:queues>
+	</vm:config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="ac29c338-1925-48a3-b6c2-d128d3eb9e5b" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="mulemuleFlow" doc:id="b9f8bca5-83df-4e9f-8b2c-86c3d3dfe8e0" >
+		<http:listener doc:name="Listener" doc:id="0cee4006-c009-41a8-8f05-624c3d177a7f" config-ref="HTTP_Listener_config" path="/test" />
+		<set-payload value='hello' doc:name="hello" doc:id="b92c14e2-0788-43e8-b9d9-f3900128a430" />
+		<set-variable value="variable" doc:name="variable" doc:id="75d66f42-1302-4e9a-8352-23b1a84a33e4" variableName="variable"/>
+		<http:request method="GET" doc:name="Request" doc:id="7d23714f-9f9e-4be9-a630-be1e4173aba3" config-ref="HTTP_Request_configuration" path="/req" target="target"/>
+		<set-payload value='#[payload ++ "10"]' doc:name="Set Payload" doc:id="4638d1c2-ec54-46e7-9bbd-3caea123e81c" />
+		<logger level="INFO" doc:name="Logger" doc:id="76b29a21-c4c7-401c-9e95-83214e8d25c6" message="#[payload]"/>
+	</flow>
+	<flow name="mulemuleFlow2" doc:id="7931be5b-9755-4f53-adbb-1238f19f2db3" >
+		<set-payload value='#[payload ++ "10"]' doc:name="Set Payload" doc:id="7250ef18-ca30-4d83-8a63-a377791f6cd4" />
+		<logger level="INFO" doc:name="Logger" doc:id="355e57cf-42d1-422f-924c-36b883e3707d" />
+	</flow>
+	<flow name="mulemuleFlow3" doc:id="6459dcda-ef06-46a1-9f14-6da7a539bf58" >
+		<http:listener doc:name="Listener" doc:id="dc9e672a-b64e-4253-a518-d3bf07bb29da" config-ref="HTTP_Listener_config" path="/req"/>
+		<set-payload value='#[10000]' doc:name="Set Payload" doc:id="6a139268-b920-4f6e-8ad4-949460156516" />
+		<set-variable value='"var"' doc:name="Set Variable" doc:id="8ee191c8-c33e-4136-a461-b649b70cb3a6" variableName="var"/>
+		<http:request method="GET" doc:name="Request" doc:id="809af6e8-2355-43f1-965f-174bfa816ccd" config-ref="HTTP_Request_configuration1" path="/foo" responseTimeout="100000000"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9ab28baf-cb34-4b3a-a979-f37f21a8efaf" />
+	</flow>
+	<flow name="mulemuleFlow1" doc:id="f138bbe9-919d-43da-9792-fb115ac1a9ed" >
+		<http:listener doc:name="Listener" doc:id="7ed9eb52-a59b-4b8a-9823-41ac0da5009b" config-ref="HTTP_Listener_config" path="/foo"/>
+		<logger level="INFO" doc:name="Logger" doc:id="29808f30-55aa-4bae-8706-fc75b1fc1ce1" />
+		<set-payload value="bye" doc:name="bye" doc:id="e6d23275-06a4-4fc4-a3eb-d7dcc6f011a9" />
+		<logger level="INFO" doc:name="Logger" doc:id="c7e804f7-dacf-4519-bba4-7d94be5b727b" />
+	</flow>
+	<flow name="mulemuleFlow4" doc:id="a2fb82bf-02b0-4e93-a086-8782275e0c63" >
+		<http:listener doc:name="Listener" doc:id="1c7c3200-b5ec-4e44-b395-07275b1ea578" config-ref="HTTP_Listener_config" path="/scatter"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="8bb39f24-ebc5-4409-8a65-a0b3969f1286" >
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="8e72902e-ce76-44c9-b340-e4556db3d8ef" name='"100"'/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="73a76d37-8d2c-4ba8-b106-9f1e705ba76d" name='"200"'/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="0236fed2-090c-471c-a91c-e94be7156022" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload..payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name='"100"' doc:id="7f102d62-f581-4dcd-833a-04319291a194" >
+		<set-payload value='#["100"]' doc:name='"100"' doc:id="bdc100d5-fd78-490b-bea9-718218498336" />
+	</flow>
+	<flow name='"200"' doc:id="20fd8337-7861-4e6f-b733-fbeae1f12fbc" >
+		<set-payload value='#["200"]' doc:name='"200"' doc:id="84411207-939d-4d9c-afd5-ec55a3bfe06d" />
+	</flow>
+	<flow name="mulemuleFlow6" doc:id="3d6c39ba-3e05-4a09-b0d7-db42bd9b0c04" >
+	</flow>
+	<flow name="mulemuleFlow5" doc:id="de2f5f5a-b24f-4490-b7c8-6c08f0f1b97c" >
+		<http:listener doc:name="Listener" doc:id="781fd5f9-3c7f-4173-b619-6ded1d08aff9" config-ref="HTTP_Listener_config" path="/batch"/>
+		<set-payload value="#[[1,2,3,4,5,6,7,8,9]]" doc:name="Set Payload" doc:id="cf3ec916-f151-4840-8ae5-17d5cf2c5d46" />
+		<set-variable value="batch var" doc:name="batch var" doc:id="1f58acc4-aac6-4424-9705-be1e34dd73a4" variableName="batch var"/>
+		<batch:job jobName="mulemuleBatch_Job" doc:id="30a46839-0ef1-4c68-af74-6fccb5c5dfd5" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="3598bf81-5787-4c0b-ae47-963350a38f7b" >
+					<ee:transform doc:name="Transform Message" doc:id="6a813ed9-5f05-465c-b733-2da3978e1f3c" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="d8e81894-fd35-4a77-aff0-7d10cb312439" >
+					<ee:transform doc:name="Transform Message" doc:id="9b9f278d-e22f-4b84-aa97-9b7eb45ad5aa" />
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+		<logger level="INFO" doc:name="Logger" doc:id="76f742ac-0cf9-4844-b038-e10e316348ea" />
+	</flow>
+</mule>

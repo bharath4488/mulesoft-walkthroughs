@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/Accounts",
+  "definitions": {
+    "Accounts": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "fullname",
+        "email",
+        "age",
+        "phone",
+        "city",
+        "postal"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "fullname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "age": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "postal": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
